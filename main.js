@@ -24,12 +24,18 @@ wss.options.server.timeout = 120000;
 wss.options.server.keepAliveTimeout = 5000;
 
 wss.broadcast = function broadcast(data, channel, id) {
-  wss.clients.forEach(function each(client) {
-    if (client.channelTunnel == channel && client.id !== id) {
-      console.log(Date(), "se fue a: " + client.id + " con data " + data);
+  if (channel === null) {
+    wss.clients.forEach(function each(client) {
       client.send(data);
-    }
-  });
+    });
+  } else {
+    wss.clients.forEach(function each(client) {
+      if (client.channelTunnel == channel && client.id !== id) {
+        console.log(Date(), "se fue a: " + client.id + " con data " + data);
+        client.send(data);
+      }
+    });
+  }
 };
 
 async function verifyToken(id_usuario, token, callback) {
@@ -137,10 +143,10 @@ wss.on("connection", function (ws, req, hed) {
             } else {
               ws.on("message", function incoming(data) {
                 try {
-                  let info = JSON.parse(data); // {"order":"cloud","id":"123456","type":"2"}
+                  let info = JSON.parse(data); // {"order":true,"id":"123456","type":"2", "order_id": 123555}
                   if (info.order == true) {
                     //el partner = 123456 y si es mi id uso el order como channel
-                    wss.broadcast(data, channel, identy);
+                    wss.broadcast(data, null, identy);
                   }
                 } catch (e) {
                   ws.send(JSON.stringify({ error: "not json" }));

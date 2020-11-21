@@ -144,7 +144,7 @@ wss.on("connection", function (ws, req, hed) {
               ws.on("message", function incoming(data) {
                 try {
                   let info = JSON.parse(data); // {"order":true,"id":"123456","type":"2", "order_id": 123555}
-                  if (info.order == true) {
+                  if (info.order == true || info.gestion == true) {
                     //el partner = 123456 y si es mi id uso el order como channel
                     wss.broadcast(data, null, identy);
                   }
@@ -159,3 +159,9 @@ wss.on("connection", function (ws, req, hed) {
     }
   }
 });
+
+/*  
+
+{"order":true,"id":"123456","type":"2", "order_id": 123555}
+
+*/

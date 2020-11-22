@@ -156,7 +156,11 @@ wss.on("connection", function (ws, req, hed) {
           }
         }
       });
+    } else {
+      ws.close();
     }
+  } else {
+    ws.close();
   }
 });
 

@@ -79,7 +79,6 @@ wss.on("connection", function (ws, req, hed) {
       ws.id_user = user_id;
       //   validar el usuario en la api
       verifyToken(user_id, token, function (result) {
-        console.log(result);
         if (result[0] === true) {
           if (/^[a-zA-Z0-9]{40}$/.test(token) === true) {
             if (valores[3] !== undefined) {

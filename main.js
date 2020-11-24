@@ -60,7 +60,9 @@ wss.on("connection", function (ws, req, hed) {
 
   console.log(Date());
   console.log("===========================");
-  console.log(wss.clients);
+  wss.clients.forEach(function each(client) {
+    console.log(client.id);
+  });
   console.log("===========================");
 
   if (req.rawHeaders.indexOf("Sec-Websocket-Key") > -1) {

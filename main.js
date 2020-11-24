@@ -58,13 +58,6 @@ wss.list = [];
 wss.on("connection", function (ws, req, hed) {
   var identy = "";
 
-  console.log(Date());
-  console.log("===========================");
-  wss.clients.forEach(function each(client) {
-    console.log(client.id);
-  });
-  console.log("===========================");
-
   if (req.rawHeaders.indexOf("Sec-Websocket-Key") > -1) {
     identy = req.rawHeaders[req.rawHeaders.indexOf("Sec-Websocket-Key") + 1];
   }

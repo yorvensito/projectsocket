@@ -58,6 +58,11 @@ wss.list = [];
 wss.on("connection", function (ws, req, hed) {
   var identy = "";
 
+  console.log(Date());
+  console.log("===========================");
+  console.log(wss.clients);
+  console.log("===========================");
+
   if (req.rawHeaders.indexOf("Sec-Websocket-Key") > -1) {
     identy = req.rawHeaders[req.rawHeaders.indexOf("Sec-Websocket-Key") + 1];
   }
@@ -142,6 +147,10 @@ wss.on("connection", function (ws, req, hed) {
               });
             } else {
               ws.on("message", function incoming(data) {
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+                console.log(data);
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+
                 try {
                   let info = JSON.parse(data); // {"order":true,"id":"123456","type":"2", "order_id": 123555}
                   if (info.order == true || info.gestion == true) {

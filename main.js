@@ -141,9 +141,9 @@ wss.on("connection", function (ws, req, hed) {
               });
             } else {
               ws.on("message", function incoming(data) {
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>", Date());
                 console.log(data);
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+                console.log("<<<<<<<<<<<<<<<<<<<<<<<", Date());
 
                 try {
                   let info = JSON.parse(data); // {"order":true,"id":"123456","type":"2", "order_id": 123555}

@@ -119,7 +119,7 @@ wss.on("connection", function (ws, req, hed) {
                       if (valores.channel == channel) {
                         wss.list[index].from.push(user_id);
                         console.log(wss.list[index].from);
-                        if (wss.list[index].from.length == 3) {
+                        if (wss.list[index].from.length == 2) {
                           wss.list.splice(index, 1);
                         }
                         ws.send(JSON.stringify({ confirm: true }));

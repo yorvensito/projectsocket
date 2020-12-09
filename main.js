@@ -101,6 +101,7 @@ wss.on("connection", function (ws, req, hed) {
                   try {
                     let info = JSON.parse(data);
                     if (info.reconnect == true) {
+                      console.log("Entrando al 2 piso");
                       //{"reconnect":true}
                       function filtro(valores) {
                         return valores.channel == channel;

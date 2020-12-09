@@ -117,28 +117,28 @@ wss.on("connection", function (ws, req, hed) {
                         } else {
                           ws.send(JSON.stringify({ confirm: true }));
                         }
-                      } else if (info.response == true) {
-                        //{"response":true}
-                        wss.list.find(function filtro(valores, index) {
-                          if (valores.channel == channel) {
-                            wss.list[index].from.push(user_id);
-                            console.log(wss.list[index].from);
-                            if (wss.list[index].from.length == 2) {
-                              wss.list.splice(index, 1);
-                            }
-                            ws.send(JSON.stringify({ confirm: true }));
-                          }
-                        });
-                      } else if (info.datas == true) {
-                        //{"datas":true,"info":{"x":"y"}}
-                        wss.list.push({
-                          channel: channel,
-                          data: info.info,
-                          from: [user_id],
-                        });
-                        ws.send(JSON.stringify({ confirm: true }));
-                        wss.broadcast(data, channel, identy);
                       }
+                    } else if (info.response == true) {
+                      //{"response":true}
+                      wss.list.find(function filtro(valores, index) {
+                        if (valores.channel == channel) {
+                          wss.list[index].from.push(user_id);
+                          console.log(wss.list[index].from);
+                          if (wss.list[index].from.length == 2) {
+                            wss.list.splice(index, 1);
+                          }
+                          ws.send(JSON.stringify({ confirm: true }));
+                        }
+                      });
+                    } else if (info.datas == true) {
+                      //{"datas":true,"info":{"x":"y"}}
+                      wss.list.push({
+                        channel: channel,
+                        data: info.info,
+                        from: [user_id],
+                      });
+                      ws.send(JSON.stringify({ confirm: true }));
+                      wss.broadcast(data, channel, identy);
                     }
                   } catch (e) {
                     ws.send(JSON.stringify({ error: "not json" }));

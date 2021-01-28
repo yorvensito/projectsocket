@@ -2,7 +2,7 @@ var WebSocketServer = require("ws").Server,
     http = require("http"),
     express = require("express"),
     app = express(),
-    port = 5001;
+    port = 21000;
 
 const axios = require("axios");
 const { json } = require("body-parser");
@@ -23,11 +23,14 @@ wss.options.maxPayload = 64 * 1024;
 wss.options.server.timeout = 120000;
 wss.options.server.keepAliveTimeout = 5000;
 
-wss.broadcast = function broadcast(data, channel, id) {
+wss.broadcast = function broadcast(data,arraydetodos) {
     wss.clients.forEach(function each(client) {
-        if (client.channelTunnel == channel && client.id !== id) {
-            console.log(Date(), "se fue a: " + client.id + " con data " + data);
+        console.log("El id del cliente es :", client.id);
+        console.log("El array de todos es :", arraydetodos);
+        // console.log(arraydetodos.indexOf(client.id));
+        if (arraydetodos.includes(parseInt(client.id))){
             client.send(data);
+            console.log("envie esta data ",data," a ",client.id );
         }
     });
 };
@@ -48,7 +51,6 @@ async function verifyToken(id_usuario, token, callback) {
         return callback([false, error]);
     }
 }
-wss.list = [];
 
 wss.on("connection", function (ws, req, hed) {
     var identy = "";
@@ -61,81 +63,34 @@ wss.on("connection", function (ws, req, hed) {
             let token = valores[2];
             ws.id = id;
 
+            console.log("Mi id es",ws.id);
+            // console.log("El tipo de is es ", typeof ws.id);
+
             //   validar el usuario en la api
             verifyToken(ws.id, token, function (result) {
                 if (result[0] === true) {
                     if (/^[a-zA-Z0-9]{40}$/.test(token) === true) {
 
-                        if (valores[3] !== undefined) {
-                            let channel = valores[3];
-                            //verifyToken(token, function (value) {
-                            //if (value[0] !== false) {
-                            ws.channelTunnel = channel;
-                            ws.on("message", function incoming(data) {
-                                console.log(Date(), "llego de: " + identy);
-                                console.log(Date(), "data es: " + data);
-                                console.log(Date(), "channel es: " + channel);
-
-                                console.log("es este ", wss.list);
-
-                                try {
-                                    let info = JSON.parse(data);
-                                    if (info.reconnect == true) {
-                                        //{"reconnect":true}
-                                        function filtro(valores) {
-                                            return valores.channel == channel;
-                                        }
-                                        let result = wss.list.find(filtro);
-                                        if (result !== undefined) {                                            if (result.from.indexOf(user_id) == -1) {
-                                                ws.send(
-                                                    JSON.stringify({
-                                                        confirm: true,
-                                                        operations: result.data,
-                                                    })
-                                                );
-                                            } else {
-                                                ws.send(JSON.stringify({ confirm: true }));
-                                            }
-                                        }
-                                    } else if (info.response == true) {
-                                        //{"response":true}
-                                        wss.list.find(function filtro(valores, index) {
-                                            if (valores.channel == channel) {
-                                                wss.list[index].from.push(user_id);
-                                                console.log(wss.list[index].from);
-                                                if (wss.list[index].from.length == 3) {
-                                                    wss.list.splice(index, 1);
-                                                }
-                                                ws.send(JSON.stringify({ confirm: true }));
-                                            }
-                                        });
-                                    } else if (info.datas == true) {
-                                        //{"datas":true,"info":{"x":"y"}}
-                                        wss.list.push({
-                                            channel: channel,
-                                            data: info.info,
-                                            from: [user_id],
-                                        });
-                                        ws.send(JSON.stringify({ confirm: true }));
-                                        wss.broadcast(data, channel, identy);
-                                    }
-                                } catch (e) {
-                                    ws.send(JSON.stringify({ error: "not json" }));
+                        ws.on("message", function incoming(data) {
+                            console.log(Date(), "llego de: " + ws.id);
+                            console.log(Date(), "data es: " + data);
+                            
+                            //try{
+                                var datos = JSON.parse(data);
+                                if(datos.status==1){ //voy a notificar a parnert {"status":1,"arraysdeparnet":[123456789,987654309],"info":""}
+                                    wss.broadcast(JSON.stringify({"status":2}),datos.arraysdeparnet);
+                                }else if(datos.status==3){// voy a enviar de uno a uno  {"status":3,"arraysdeparnet":[00012154],"info":""}
+                                    wss.broadcast(JSON.stringify({"status":4}),datos.arraysdeparnet);
+                                }else if(datos.status==6){//envio para saber mi id
+                                    ws.send(JSON.stringify({"status":5,"id":ws.id}));
                                 }
-                            });
-                        } else {
-                            ws.on("message", function incoming(data) {
-                                try {
-                                    let info = JSON.parse(data); // {"order":"cloud","id":"123456","type":"2"}
-                                    if (info.order == true) {
-                                        //el partner = 123456 y si es mi id uso el order como channel
-                                        wss.broadcast(data, channel, identy);
-                                    }
-                                } catch (e) {
-                                    ws.send(JSON.stringify({ error: "not json" }));
-                                }
-                            });
-                        }
+                            //}catch(e){
+                            //    console.log(e);
+                            //}
+
+                        });
+
+
                     }
                 }
             });

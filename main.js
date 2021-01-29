@@ -79,13 +79,28 @@ wss.on("connection", function (ws, req, hed) {
                                 var datos = JSON.parse(data);
                                 if(datos.status==1){ //voy a notificar a parnert {"status":1,"arraysdeparnet":[123456789,987654309],"info":""}
                                     // el estatus 2 se maneja para la busqueda de partners 
-                                    wss.broadcast(JSON.stringify({"status":2, "datos": datos}),datos.arraysdeparnet);
+                                    try {
+                                        wss.broadcast(JSON.stringify({"status":2, "datos": datos}),datos.arraysdeparnet);
+                                    } catch (e) {
+                                        ws.send(JSON.stringify({ error: "not json" }));
+                                    }
+                                    
                                 }else if(datos.status==3){// voy a enviar de uno a uno  {"status":3,"arraysdeparnet":[00012154],"info":""}
                                     // el status 3 se utiliza para la respuesta del partner hacia el cliente
-                                    wss.broadcast(JSON.stringify({"status":4, "datos": datos}),datos.arraysdeparnet);
+                                    
+                                    try {
+                                        wss.broadcast(JSON.stringify({"status":4, "datos": datos}),datos.arraysdeparnet);
+                                    } catch (e) {
+                                        ws.send(JSON.stringify({ error: "not json" }));
+                                    }
                                 }else if(datos.status==5){//envio para saber mi id
                                     // se utiliza para la aceptacion de la propuesta de parte del cliente
-                                    wss.broadcast(JSON.stringify({"status":6, "datos": datos}),datos.arraysdeparnet);
+                                    
+                                    try {
+                                        wss.broadcast(JSON.stringify({"status":6, "datos": datos}),datos.arraysdeparnet);
+                                    } catch (e) {
+                                        ws.send(JSON.stringify({ error: "not json" }));
+                                    }
                                 }
                             //}catch(e){
                             //    console.log(e);

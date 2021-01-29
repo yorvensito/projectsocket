@@ -78,11 +78,14 @@ wss.on("connection", function (ws, req, hed) {
                             //try{
                                 var datos = JSON.parse(data);
                                 if(datos.status==1){ //voy a notificar a parnert {"status":1,"arraysdeparnet":[123456789,987654309],"info":""}
-                                    wss.broadcast(JSON.stringify({"status":2}),datos.arraysdeparnet);
+                                    // el estatus 2 se maneja para la busqueda de partners 
+                                    wss.broadcast(JSON.stringify({"status":2, "datos": datos}),datos.arraysdeparnet);
                                 }else if(datos.status==3){// voy a enviar de uno a uno  {"status":3,"arraysdeparnet":[00012154],"info":""}
-                                    wss.broadcast(JSON.stringify({"status":4}),datos.arraysdeparnet);
-                                }else if(datos.status==6){//envio para saber mi id
-                                    ws.send(JSON.stringify({"status":5,"id":ws.id}));
+                                    // el status 3 se utiliza para la respuesta del partner hacia el cliente
+                                    wss.broadcast(JSON.stringify({"status":4, "datos": datos}),datos.arraysdeparnet);
+                                }else if(datos.status==5){//envio para saber mi id
+                                    // se utiliza para la aceptacion de la propuesta de parte del cliente
+                                    wss.broadcast(JSON.stringify({"status":6, "datos": datos}),datos.arraysdeparnet);
                                 }
                             //}catch(e){
                             //    console.log(e);
